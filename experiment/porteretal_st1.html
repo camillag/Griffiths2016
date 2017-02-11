@@ -37,7 +37,70 @@
 
 <!-- Questionnaire slide 1 - LIB condition -->
 
-<div class="slide" id="favorable_LIB">
+<div class="slide" id="LIB_slide">
+  <br>
+
+  <div align="center">
+    <h5><b>Imagine that someone is communicating with you about a man named Peter. Peter is American, has an interest in politics, and voted for Barack Obama.</b></h5><br>
+
+    <h5><div id="LIB_sentence"></div>
+    </h5>
+    
+  </div>
+
+
+  <!-- Show sentence from attitudes scale -->
+  <div align="center">
+    <p id ="condition">{{}}</p> 
+  </div>
+
+
+  <p class="block-text">Based on the information above, what is the likelihood that Peter is a Democrat or a Republican? Use the scale below to.</p>
+
+  <!-- Likert radio buttons -->
+  <table align = "center"><tr>
+    <td align="center">
+      <tr>
+        <td>Definitely a Democrat</td>
+        <td></td>
+        <td><input id ="likert1" type="radio" name="judgment" value = "1">
+          <label for="likert1">1</label></td>
+        <td><input id ="likert2" type="radio" name="judgment" value = "2">
+            <label for="likert2">2</label></td>
+        <td><input id ="likert3" type="radio" name="judgment" value = "3">
+              <label for="likert3">3</label></td>
+        <td><input id ="likert4" type="radio" name="judgment" value = "4">
+                <label for="likert4">4</label></td>
+        <td><input id ="likert5" type="radio" name="judgment" value = "5">
+                  <label for="likert5">5</label></td>
+        <td><input id ="likert6" type="radio" name="judgment" value = "6">
+                    <label for="likert6">6</label></td>
+        <td><input id ="likert7" type="radio" name="judgment" value = "7">
+                      <label for="likert7">7</label></td>
+        <td>&nbsp;&nbsp;&nbsp;</td>
+        <td>Definitely a Republican</td>
+      </tr>
+    </table>
+
+    <!-- Next button and "please make a response" message -->
+    <table align="center"><tr>
+      <td align="center">
+        <button type="button" id="nextButton_Att" onClick="experiment.log_response()"> next</button>
+      </td> 
+      <tr><td align="center">
+        <div id="testMessage_att"> </div>
+      </td></tr>
+    </table>
+</div>
+
+
+ <div class="slide" id="manip_check">
+  <br>
+ <div align="center">
+    <h5><b>Manipulation check question</b></h5><br>
+</div>
+
+ <div class="slide" id="attitudes_slide">
   <br>
 
   <div align="center">
@@ -88,7 +151,7 @@
       </td></tr>
     </table>
 </div>
-
+ -->
 
 <!-- The two-choice instructions slide. -->
 <div class="slide" id="two_choice_slide">
@@ -213,7 +276,7 @@
  You're finished - thanks for participating! Submitting to Mechanical Turk...
 </div>
 
-<script src="parenting_proj_e3.js"></script>
+<script src="porteretal_st1.js"></script>
 
 </body>
 </html>
