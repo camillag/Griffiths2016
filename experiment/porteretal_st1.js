@@ -67,8 +67,14 @@ var manipcheck = {
 		trial_type: "manipcheck"
 	};
 
+var debriefing = {
+		trial_number_block: 3,
+		trial_type: "debriefing"
+	};
+
 trials.push(cond);
 trials.push(manipcheck);
+trials.push(debreifing)
 
 
 // first build LIB condition trials
@@ -232,7 +238,9 @@ var experiment = {
 	    	 showSlide("manip_check");              //display slide
 	    } 
 
-
+		if (trial_info.trial_type == "demographics") {
+	    	 showSlide("debriefing");              //display slide
+	    } 
 	    
 
 	    // log the sentence for each trial
