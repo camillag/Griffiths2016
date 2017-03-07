@@ -114,11 +114,26 @@ pilot1=pilot1%>%
 summary(lm(peterID ~ condition, data=pilot1))
 ```
 
+```{r replication plot from original study}
+pilot1$peterID=as.integer(pilot1$peterID)
+pilot1$condition=as.factor(pilot1$condition)
+ggplot(pilot1, 
+       aes(x=condition, y=peterID)) + geom_bar(position='dodge', stat='identity')+
+  ylab("Mean Political Category ID") + 
+  xlab("LIB Condition")
+```
+
 
 
 ###Differences from Original Study
 
-I wrote the language for the demographics questions myself, and borrowed the political beliefs questions from Pew political opinion poll questions that were highly rated as liberal or conservative. I do not expect this difference to impact the results in any way. 
+I wrote the language for the demographics questions myself, and borrowed four items for the political beliefs questions from Pew political opinion poll questions. I do not expect this difference to impact the results in any way. 
+
+### Link to current version of the experiment 
+
+https://stanforduniversity.qualtrics.com/SE/?SID=SV_8BT3uDEjxT0UBIF 
+
+
 
 
 ### Methods Addendum (Post Data Collection)
