@@ -1,0 +1,79 @@
+---
+title: "porteretal.pilot1"
+author: "Camilla"
+date: "2/28/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+
+```{r download pilot data}
+pilot1= read_csv('/Users/camilla/Documents/Winter 17/Psych254/Porter-etal2016/experiment/pilot1data.csv')
+```
+
+
+From the paper (re: LIB manipulation checks): 
+
+"As expected, participants in
+the favorable-LIB condition believed that Peter was more
+likely to be helpful in the future (M = 70.29%, SD = 23.58)
+than did participants in the unfavorable-LIB condition
+(M = 57.83%, SD = 24.08), t(86) = 2.45, p = .016, d = 0.53.
+Similarly, participants in the favorable-LIB condition indicated
+that Peter was less likely to be rude in the future
+(M = 33.67%, SD = 25.48) compared with participants in
+the unfavorable-LIB condition (M = 53.93%, SD = 25.22),
+t(86) = 3.73, p < .001, d = 0.80."
+
+```{r manipulation checks}
+#condition variable
+pilot1 = pilot1 %>%
+  slice(3:7) %>%
+  mutate(condition= ifelse(is.na(LIB_DV) , "ULIB", "LIB"))
+pilot1$condition
+
+#mean perception of peter as helpful & rude
+pilot1$MCfuture_helpful_1=as.numeric(pilot1$MCfuture_helpful_1)
+pilot1$MCfuture_rude_1=as.numeric(pilot1$MCfuture_rude_1)
+
+pilot1 %>%
+  summarise(meanhelp=mean(MCfuture_helpful_1)) 
+
+pilot1 %>%
+  summarise(meanrude=mean(MCfuture_rude_1))
+
+#MC question: are people perceiving peter to be more rude/helpful based on condition?
+summary(lm(MCfuture_rude_1 ~ condition, data=pilot1))
+summary(lm(MCfuture_helpful_1 ~ condition, data=pilot1))
+```
+
+From the paper (re: main DV analysis): 
+
+"Social category inference. The primary dependent
+measure was participants’ inferences regarding the communicator’s
+political affiliation. As predicted, participants
+in the favorable-LIB condition were significantly more
+likely to believe that the communicator was a Democrat,
+and thus shared a party affiliation with the target, than
+were participants in the unfavorable-LIB condition,
+t(86) = 2.89, p = .005, d = 0.62 (Fig. 1). This difference
+was not moderated by participants’ self-reported political-
+party affiliation or ideological endorsement (ps > .18).
+Our findings suggested initial support for our hypothesis
+that individuals can infer a communicator’s social identity
+from his or her language, regardless of their own social
+identity"
+
+```{r social category inference - MAIN DV}
+pilot1[is.na(pilot1)] = ''
+#creating new 'social identity perception' variable
+pilot1=pilot1%>%
+  mutate(peterID=paste(LIB_DV, ULIB_DV))
+
+#does LIB condition impact people's perceptions of Peter's identity? (1=definitely a democrat, 7=definitely a republican)
+summary(lm(peterID ~ condition, data=pilot1))
+```
+

@@ -74,7 +74,7 @@ var debriefing = {
 
 trials.push(cond);
 trials.push(manipcheck);
-trials.push(debreifing)
+trials.push(debriefing)
 
 
 // first build LIB condition trials
