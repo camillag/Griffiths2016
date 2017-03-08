@@ -116,6 +116,8 @@ pilot1=pilot1%>%
 summary(lm(peterID ~ condition, data=pilot1))
 ```
 
+I will primarily be looking at the effect size on the above effect (difference between favorable and unfavorable LIB conditions in their political ID of peter) to determine whether it was a successful replication. 
+
 ```{r replication plot from original study}
 pilot1$peterID=as.integer(pilot1$peterID)
 pilot1$condition=as.factor(pilot1$condition)
