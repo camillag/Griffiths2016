@@ -67,7 +67,7 @@ t(86) = 3.73, p < .001, d = 0.80."
 ```{r manipulation checks}
 #condition variable
 pilot1 = pilot1 %>%
-  slice(3:7) %>%
+  select(-1:2) %>% #removing the first two lines of the dataset, which will always be the qualtrics junk headers. 
   mutate(condition= ifelse(is.na(LIB_DV) , "ULIB", "LIB"))
 str(pilot1$condition)
 
