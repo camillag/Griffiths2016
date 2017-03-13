@@ -1,0 +1,191 @@
+---
+title: "Replication of Study X by Sample & Sample (200x, Psychological Science)"
+author: "Replication Author[s] (contact information)"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    toc: yes
+    toc_depth: 3
+ 
+---
+
+<!-- Replication reports should all use this template to standardize reporting across projects.  These reports will be public supplementary materials that accompany the summary report(s) of the aggregate results. -->
+
+##Introduction
+
+[No abstract is needed.]  Each replication project will have a straightforward, no frills report of the study and results.  These reports will be publicly available as supplementary material for the aggregate report(s) of the project as a whole.  Also, to maximize project integrity, the intro and methods will be written and critiqued in advance of data collection.  Introductions can be just 1-2 paragraphs clarifying the main idea of the original study, the target finding for replication, and any other essential information.  It will NOT have a literature review -- that is in the original publication. You can write both the introduction and the methods in past tense.  
+
+
+##Methods
+
+###Power Analysis
+
+Original effect size, power analysis for samples to achieve 80%, 90%, 95% power to detect that effect size.  Considerations of feasibility for selecting planned sample size.
+
+###Planned Sample
+
+Planned sample size and/or termination rule, sampling frame, known demographics if any, preselection rules if any.
+
+###Materials
+
+"Participants completed all tasks on a computer. They were asked to read a passage and then respond to questions. The beginning of the passage was the same for all participants: “Imagine that someone is communicating with you about a man named Peter. Peter is American, has an interest in politics, and voted for Barack Obama.” This information was intended to subtly imply that Peter (the target) was a Democrat. In the second part of the passage, participants were provided with the communicator’s description of Peter’s helpful and rude behaviors." 
+
+These materials were offered in full in the SI. 
+
+###Procedure	
+
+"In the favorable-LIB condition, Peter’s helping behavior was described abstractly (e.g., “[Peter] is someone who stands up for the interests of others”), and his rude behavior was described concretely (e.g., “Peter said something rude to another person recently”). In the unfavorable-LIB condition, Peter’s helping behavior was described concretely (e.g., “Peter helped another person, even when it did not benefit him”), and his rude behavior was described abstractly (e.g., “[Peter] is cold and unfriendly”). After reading the passage, participants were asked to assess the likelihood that the communicator was either a Democrat or a Republican. Ratings were made on a 7-point scale, anchored by 1, definitely a Republican, and 7, definitely a Democrat. As a check of the effectiveness of the LIB manipulation, we asked participants to estimate the percentage of future situations in which Peter was likely to be helpful and the percentage of future situations in which he was likely to be rude (Semin & de Poot, 1997). Finally, participants completed a demographic questionnaire that asked their gender, their political- party affiliation, and the degree to which they endorsed liberal and conservative beliefs (on 7-point scales ranging from 1, strongly disagree, to 7, strongly agree)." 
+
+This procedure was precisely followed with the exception of the exact wording of the dempgraphic questions, political party affiliation, and political beliefs. I wrote the language for these questions myself, and borrowed the political beliefs questions from Pew political opinion poll questions that were highly rated as liberal or conservative. 
+
+###Analysis Plan
+
+
+```{r setup, include=FALSE}
+library(tidyverse)
+```
+
+
+```{r download pilot data}
+pilot1= read_csv('/Users/camilla/Documents/Winter 17/Psych254/Porter-etal2016/experiment/pilot1data.csv')
+```
+
+
+From the paper (re: LIB manipulation checks): 
+
+"As expected, participants in
+the favorable-LIB condition believed that Peter was more
+likely to be helpful in the future (M = 70.29%, SD = 23.58)
+than did participants in the unfavorable-LIB condition
+(M = 57.83%, SD = 24.08), t(86) = 2.45, p = .016, d = 0.53.
+Similarly, participants in the favorable-LIB condition indicated
+that Peter was less likely to be rude in the future
+(M = 33.67%, SD = 25.48) compared with participants in
+the unfavorable-LIB condition (M = 53.93%, SD = 25.22),
+t(86) = 3.73, p < .001, d = 0.80."
+
+```{r manipulation checks}
+#condition variable
+pilot1 = pilot1 %>%
+  select(-1:2) %>% #removing the first two lines of the dataset, which will always be the qualtrics junk headers. 
+  mutate(condition= ifelse(is.na(LIB_DV) , "ULIB", "LIB"))
+str(pilot1$condition)
+
+#mean perception of peter as helpful & rude
+pilot1$MCfuture_helpful_1=as.numeric(pilot1$MCfuture_helpful_1)
+pilot1$MCfuture_rude_1=as.numeric(pilot1$MCfuture_rude_1)
+pilot1$condition=as.factor(pilot1$condition)
+
+pilot1 %>%
+  group_by(condition) %>%
+  summarise(meanhelp=mean(MCfuture_helpful_1)) 
+
+pilot1 %>%
+  group_by(condition) %>%
+  summarise(meanrude=mean(MCfuture_rude_1))
+
+#MC question: are people perceiving peter to be more rude/helpful based on condition?
+summary(lm(MCfuture_rude_1 ~ condition, data=pilot1))
+summary(lm(MCfuture_helpful_1 ~ condition, data=pilot1))
+```
+
+From the paper (re: main DV analysis): 
+
+"Social category inference. The primary dependent
+measure was participants’ inferences regarding the communicator’s
+political affiliation. As predicted, participants
+in the favorable-LIB condition were significantly more
+likely to believe that the communicator was a Democrat,
+and thus shared a party affiliation with the target, than
+were participants in the unfavorable-LIB condition,
+t(86) = 2.89, p = .005, d = 0.62 (Fig. 1). This difference
+was not moderated by participants’ self-reported political-
+party affiliation or ideological endorsement (ps > .18).
+Our findings suggested initial support for our hypothesis
+that individuals can infer a communicator’s social identity
+from his or her language, regardless of their own social
+identity"
+
+```{r social category inference - MAIN DV}
+pilot1[is.na(pilot1)] = ''
+#creating new 'social identity perception' variable
+pilot1=pilot1%>%
+  mutate(peterID=paste(LIB_DV, ULIB_DV))
+
+#does LIB condition impact people's perceptions of Peter's identity? (1=definitely a democrat, 7=definitely a republican)
+summary(lm(peterID ~ condition, data=pilot1))
+```
+
+I will primarily be looking at the effect size on the above effect (difference between favorable and unfavorable LIB conditions in their political ID of peter) to determine whether it was a successful replication. 
+
+```{r replication plot from original study}
+pilot1$peterID=as.integer(pilot1$peterID)
+pilot1$condition=as.factor(pilot1$condition)
+ggplot(pilot1, 
+       aes(x=condition, y=peterID)) + geom_bar(position='dodge', stat='identity')+
+  ylab("Mean Political Category ID") + 
+  xlab("LIB Condition")
+```
+
+
+
+###Differences from Original Study
+
+I wrote the language for the demographics questions myself, and borrowed four items for the political beliefs questions from Pew political opinion poll questions. I do not expect this difference to impact the results in any way. 
+
+### Link to current version of the experiment 
+
+https://stanforduniversity.qualtrics.com/SE/?SID=SV_8BT3uDEjxT0UBIF 
+
+
+
+
+### Methods Addendum (Post Data Collection)
+
+You can comment this section out prior to final report with data collection.
+
+#### Actual Sample
+  Sample size, demographics, data exclusions based on rules spelled out in analysis plan
+
+#### Differences from pre-data collection methods plan
+  Any differences from what was described as the original plan, or “none”.
+
+
+##Results
+
+
+### Data preparation
+
+Data preparation following the analysis plan.
+	
+```{r include=F}
+###Data Preparation
+
+####Load Relevant Libraries and Functions
+
+####Import data
+
+#### Data exclusion / filtering
+
+#### Prepare data for analysis - create columns etc.
+```
+
+### Confirmatory analysis
+
+The analyses as specified in the analysis plan.  
+
+*Side-by-side graph with original graph is ideal here*
+
+###Exploratory analyses
+
+Any follow-up analyses desired (not required).  
+
+## Discussion
+
+### Summary of Replication Attempt
+
+Open the discussion section with a paragraph summarizing the primary result from the confirmatory analysis and the assessment of whether it replicated, partially replicated, or failed to replicate the original result.  
+
+### Commentary
+
+Add open-ended commentary (if any) reflecting (a) insights from follow-up exploratory analysis, (b) assessment of the meaning of the replication (or not) - e.g., for a failure to replicate, are the differences between original and present study ones that definitely, plausibly, or are unlikely to have been moderators of the result, and (c) discussion of any objections or challenges raised by the current and original authors about the replication attempt.  None of these need to be long.
